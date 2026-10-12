@@ -1,11 +1,11 @@
-# King Manager — loads split body (king_p1 + king_p2) then runs
+# King Manager — loads king_p1.py + king_p2.py then runs
 import pathlib, runpy
 
 _base = pathlib.Path(__file__).resolve().parent
 _p1 = _base / "king_p1.py"
 _p2 = _base / "king_p2.py"
 if not _p1.exists() or not _p2.exists():
-    raise SystemExit("Missing king_p1.py / king_p2.py — redeploy full repo")
+    raise SystemExit("Missing king_p1.py / king_p2.py")
 
 _code = _p1.read_text(encoding="utf-8") + _p2.read_text(encoding="utf-8")
 _tmp = _base / "_king_runtime.py"
