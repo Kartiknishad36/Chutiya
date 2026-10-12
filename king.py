@@ -1,19 +1,17 @@
-# King Manager — loads king_p1.py + king_p2.py then runs
-import pathlib, runpy
-
+# Auto-expand embedded king body from kb64_*.txt then run
+import base64, pathlib, runpy
 _base = pathlib.Path(__file__).resolve().parent
-_p1 = _base / "king_p1.py"
-_p2 = _base / "king_p2.py"
-if not _p1.exists() or not _p2.exists():
-    raise SystemExit("Missing king_p1.py / king_p2.py")
-
-_code = _p1.read_text(encoding="utf-8") + _p2.read_text(encoding="utf-8")
-_tmp = _base / "_king_runtime.py"
-_tmp.write_text(_code, encoding="utf-8")
+parts = sorted(_base.glob("kb64_*.txt"), key=lambda p: p.name)
+if not parts:
+    raise SystemExit("kb64_*.txt missing — pull full repo")
+b64 = "".join(p.read_text() for p in parts)
+code = base64.b64decode(b64)
+tmp = _base / "_king_runtime.py"
+tmp.write_bytes(code)
 try:
-    runpy.run_path(str(_tmp), run_name="__main__")
+    runpy.run_path(str(tmp), run_name="__main__")
 finally:
     try:
-        _tmp.unlink()
+        tmp.unlink()
     except Exception:
         pass
